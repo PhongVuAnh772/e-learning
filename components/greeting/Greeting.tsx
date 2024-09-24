@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 interface Props {
   title: string;
   description: string;
-  overlayDescription: string;
+  overlayDescription?: string;
   children?: ReactNode;
   otherDescription?: string;
 }
@@ -57,9 +57,10 @@ const Greeting = ({
             contentFit="fill"
             transition={1000}
           />
-          <Text style={styles.overlayDescription}>
+          
+          {overlayDescription && <Text style={styles.overlayDescription}>
             {i18n.t(overlayDescription)}
-          </Text>
+          </Text>}
 
           {children}
         </View>

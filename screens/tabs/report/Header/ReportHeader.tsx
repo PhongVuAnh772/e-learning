@@ -70,7 +70,7 @@ const ReportHeader = ({onCategoryChanged}: Props) => {
               style={activeIndex === index ? styles.categoriesBtnActive : styles.categoriesBtn}
               onPress={() => selectCategory(index)}>
               <Text style={activeIndex === index ? styles.categoryTextActive : styles.categoryText}>
-                {t(item.name)}
+                {i18n.t(item.name)}
               </Text>
             </TouchableOpacity>
           ))}

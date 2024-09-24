@@ -37,9 +37,8 @@ const DATA = [
 
 interface Props {
   item: any;
-  t: any;
 }
-const RenderItem = ({ item,t }: Props) => (
+const RenderItem = ({ item }: Props) => (
   <View style={styles.container}>
     
     {item.status === "done" && <View style={[styles.activateContent, { backgroundColor: "#AFF9D1" }]}>
@@ -117,8 +116,9 @@ const RenderItem = ({ item,t }: Props) => (
 const RetailOrderList = () => {
   return (
     <FlashList
+    showsVerticalScrollIndicator={false}
       data={DATA}
-      renderItem={({ item }) => <RenderItem item={item} t={t}/>}
+      renderItem={({ item }) => <RenderItem item={item} />}
       estimatedItemSize={200}
       // ListEmptyComponent={() => <Facebook />}
     />

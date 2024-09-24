@@ -14,6 +14,7 @@ import useAsyncStorage from "@/hooks/useAsyncStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import store from "@/redux/store";
 import { DELETE_SESSION_AUTH } from "@/redux/slices/auth.slice";
+import auth from '@react-native-firebase/auth';
 
 interface AuthContextType {
   loggedIn: boolean;
@@ -55,6 +56,12 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
   const [tokens, setTokens] = useState<any>(
     useAsyncStorage("tokens") as any | null
   );
+  const [initializing, setInitializing] = useState(true);
+
+  function onAuthStateChanged(user: any) {
+    setAccount(user);
+    if (initializing) setInitializing(false);
+  }
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -62,29 +69,17 @@ const AuthProvider = ({ children }: PropsWithChildren) => {
       const agency = await AsyncStorage.getItem("agency");
       try {
         if (agency) {
-          if (tokens) {
-            await dispatch(getProfile(tokens)).unwrap();
-            setLoggedIn(true);
+            const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
             navigation.reset({
               index: 0,
               routes: [
                 {
-                  name: "(tabs)",
+                  name: account ? "(tabs)" : "(modals)/login",
                 } as any,
               ],
             });
-          } else {
-            setLoggedIn(false);
-            navigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: "(modals)/login",
-                } as any,
-              ],
-            });
-          }
-        } else {
+            return subscriber;
+        } else { 
           navigation.reset({
             index: 0,
             routes: [

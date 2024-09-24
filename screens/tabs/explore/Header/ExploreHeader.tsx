@@ -26,7 +26,6 @@ import SearchBar from "@/components/Search/SearchBar";
 import shoppingIcon from "@/assets/icons/shopping.png";
 import searchIcon from "@/assets/icons/search.png";
 import { fetchSearchingCampaign } from "@/services/search.service";
-import { useAuthContext } from "@/auth/ctx";
 import { useAppSelector } from "@/redux/store";
 import { getProfileFromState } from "@/auth/ctx";
 import { useTranslation } from "react-i18next";
@@ -41,7 +40,6 @@ const ExploreHeader: React.FC<Props> = ({ avatar_url, name, counting }) => {
    
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
-  const { tokens } = useAuthContext();
   const handleEnterPress = async () => {
     router.push({
         pathname: "(modals)/searching",

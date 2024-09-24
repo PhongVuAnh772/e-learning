@@ -102,6 +102,7 @@ const RetailOrderList = () => {
    
   return (
     <FlashList
+    showsVerticalScrollIndicator={false}
       data={DATA}
       renderItem={({ item }) => <RenderItem item={item} />}
       estimatedItemSize={200}

@@ -13,9 +13,8 @@ import { useState } from "react";
 import i18n from "@/translations";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 import { defaultStyles } from "@/constants/Styles";
-import Loading from "@/assets/animations/loading";
 import AskingSignUp from "@/components/asking/AskingSignUp";
-import { useTranslation } from "react-i18next";
+
 enum Strategy {
   Google = "oauth_google",
   Github = "oauth_github",

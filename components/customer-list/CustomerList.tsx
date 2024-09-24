@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import SearchCustomer from "../search-customer/SearchCustomer";
 import CustomerListContent from "./content/CustomerListContent";
 import { getCustomer } from "@/services/customer.service";
-import { useAuthContext } from "@/auth/ctx";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getTokenFromState } from "@/auth/ctx";
 import { FetchingDataLoader } from "../loading/LoadingFetch";
@@ -23,7 +22,6 @@ const CustomerList = () => {
       if (response && response?.listData) {
         setCustomers(response.listData);
         setLoading(false);
-        console.log(response)
       } else {
         setCustomers([]);
         setLoading(false);
@@ -40,6 +38,7 @@ const CustomerList = () => {
       ) : (
         <CustomerListContent customer={customers} />
       )}
+
     </View>
   );
 };

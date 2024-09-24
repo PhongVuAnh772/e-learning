@@ -1,11 +1,12 @@
 {
   "expo": {
+    "jsEngine": "hermes",
     "name": "Education Learning",
     "slug": "ELearning",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/playstore.png",
-    "scheme": "myapp",
+    "scheme": "e-learning",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash/splash.jpg",
@@ -13,20 +14,34 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "jsEngine": "jsc",
       "supportsTablet": true,
       "bundleIdentifier": "vn.elearning.app",
-      "googleServicesFile": "./firebase/GoogleService-Info.plist"
+      "googleServicesFile": "./firebase/GoogleService-Info.plist",
+      "bitcode": false
     },
     "android": {
       "package": "vn.elearning.app",
+      "jsEngine": "jsc",
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/playstore.png",
         "backgroundColor": "#ffffff"
       },
+      "enablePngCrunchInReleaseBuilds": false,
       "permissions": [
         "android.permission.READ_CALENDAR",
-        "android.permission.WRITE_CALENDAR"
+        "android.permission.WRITE_CALENDAR",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CAMERA",
+        "android.permission.INTERNET",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.WAKE_LOCK"
       ],
       "googleServicesFile": "./firebase/google-services.json"
     },
@@ -39,6 +54,11 @@
       "expo-router",
       "expo-localization",
       "expo-calendar",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      [
+        "@react-native-google-signin/google-signin"
+      ],
       [
         "expo-image-picker",
         {
@@ -50,6 +70,9 @@
         {
           "android": {
             "minSdkVersion": 24
+          },
+          "ios": {
+            "useFrameworks": "static"
           }
         }
       ],
@@ -70,7 +93,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "1df11b16-29ed-490d-b3f7-2de0ee04a4d2"
+        "projectId": "d8c01670-f847-4d0e-8d82-dd54a1f0800f"
       }
     }
   }

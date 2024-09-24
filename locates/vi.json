@@ -1,5 +1,5 @@
 {
-    "home-tab": "Trang chủ",
+  "home-tab": "Trang chủ",
   "report-tab": "Báo cáo",
   "customer-tab": "Khách hàng",
   "order-tab": "Đơn hàng",
@@ -106,7 +106,7 @@
   "login":"Đăng nhập",
   "greeting-login": "Rất vui được gặp bạn.",
   "invite-login": "Đăng nhập để sử dụng dịch vụ",
-  "overlay-login": "Hãy nhập thông tin tài khoản và mật khẩu của đại lý mà bạn đang quán lý",
+  "overlay-login": "Hãy nhập thông tin tài khoản và mật khẩu của bạn đang quán lý",
   "your-phone":"Số điện thoại của bạn",
   "login-loading-title": "Chờ hệ thống đăng nhập",
   "login-loading-description": "Vui lòng chờ hệ thống tiếp nhận thông tin đăng nhập của bạn trong giây lát",
@@ -163,6 +163,10 @@
   "facebook-page":"Trang Facebook",
   "empty-history-caring": "Chưa thực hiện hoạt động nào với người dùng trên",
   "empty-history-caring-action": "Thêm hoạt động",
-  "content":"Nội dung"
-  
+  "content":"Nội dung",
+  "or": "Hoặc",
+  "register":"Đăng ký",
+  "greeting-register": "Rất vui được gặp bạn.",
+  "invite-register": "Đăng ký để sử dụng dịch vụ",
+  "overlay-register": "Hãy nhập thông tin tài khoản và mật khẩu của bạn đang quán lý",
 }

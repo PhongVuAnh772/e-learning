@@ -88,6 +88,7 @@ const Caring = () => {
       data={data}
       renderItem={({ item }) => <RenderItem item={item} />}
       estimatedItemSize={200}
+      showsVerticalScrollIndicator={false}
       // ListEmptyComponent={() => <Facebook />}
     />
     </View>

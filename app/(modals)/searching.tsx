@@ -55,6 +55,7 @@ const Searching = () => {
         data={params.response as any}
         renderItem={({ item }) => <RenderItem item={item} />}
         estimatedItemSize={200}
+        showsVerticalScrollIndicator={false}
         // ListEmptyComponent={() => <Facebook />}
       />
     </View>

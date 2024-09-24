@@ -55,6 +55,7 @@ const CustomerListAppointment = () => {
       data={DATA}
       renderItem={({ item }) => <RenderItem item={item} />}
       estimatedItemSize={200}
+      showsVerticalScrollIndicator={false}
       // ListEmptyComponent={() => <Facebook />}
     />
     

@@ -1,7 +1,13 @@
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import icon from '@/assets/images/playstore.png'
+import { Redirect, useNavigationContainerRef, useRouter } from 'expo-router';
 const Loading = () => {
+  const router = useRouter();
+  // useEffect(() => {
+  //   fi
+  // }, [])
+  
   return (
     <View style={styles.container}>
       <Image source={icon} style={styles.icon}/> 

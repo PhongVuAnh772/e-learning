@@ -1,6 +1,9 @@
 import firestore from '@react-native-firebase/firestore';
 
-export const useUserFireStore = () => {
+// Android : 966849267872-fp2ilgsrmelophht6051spj7lg8cpj6o.apps.googleusercontent.com
+// IOS : 966849267872-pjrjlrnhmiq0j2trupb2d74ldvdlqocq.apps.googleusercontent.com
+
+export const useUser = () => {
     const getUsers = async () => {
     try {
         const usersSnapshot = await firestore().collection('Users').get();

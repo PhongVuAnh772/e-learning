@@ -102,7 +102,6 @@ const styles = StyleSheet.create({
   },
   loadingContent: {
     width: 340,
-    height: 465,
     backgroundColor: "white",
     alignItems: "center",
     padding: 32,
@@ -119,6 +118,7 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 24,
     fontFamily: "quicksand-bold",
+    textAlign:"center",
   },
   description: {
     color: "black",

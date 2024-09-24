@@ -19,7 +19,7 @@ const ContentReport = ({ category }: Props) => {
     <ScrollView style={styles.container}>
       <View style={[styles.overviewContainer, {height: isSmallScreen ? 158 : 180}]}>
         <Text style={styles.title}>{i18n.t("business-results")}</Text>
-        <Text style={styles.description}>{t(category)}</Text>
+        <Text style={styles.description}>{i18n.t(category)}</Text>
         <Text style={styles.price}>40.000.000đ</Text>
         <Text style={styles.descriptionMonthly}>
           {i18n.t("you-choosing")} - <Text style={styles.bold}>Tháng 3</Text>

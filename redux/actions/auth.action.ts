@@ -2,7 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import APIGateway from '@/constants/APIGateway';
 import { AxiosRequestConfig } from 'axios';
-import { useAuthContext } from '@/auth/ctx';
 import { Profile } from '@/types/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

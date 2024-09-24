@@ -52,6 +52,7 @@ const ListCategory = ({ data }: CategoryProps) => {
   return (
     <View style={styles.container}>
       <FlashList
+      showsVerticalScrollIndicator={false}
         data={data}
         renderItem={({ item }) => <ItemComponent item={item} style={styles} />}
         estimatedItemSize={200}

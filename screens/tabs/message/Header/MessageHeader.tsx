@@ -18,7 +18,7 @@ const OrderHeader = () => {
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>{i18n.t("order-tab")}</Text>
-          <ButtonAdd navigation="" />
+          <ButtonAdd navigation={() => console.log('ok')}/>
         </View>
       </View>
     </SafeAreaView>

@@ -134,6 +134,7 @@ const HistoryCaringList = ({
         <FetchingDataLoader />
       ) : (
         <FlashList
+        showsVerticalScrollIndicator={false}
         data={history}
         renderItem={({ item }) => <RenderItem item={item} customer={customer} />}
         estimatedItemSize={200}

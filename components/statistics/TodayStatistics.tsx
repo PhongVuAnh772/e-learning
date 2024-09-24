@@ -7,11 +7,9 @@ import newCustomerIcon from "@/assets/card/new-customer.png";
 import retailOrderIcon from "@/assets/card/retail-order.png";
 import revenueIcon from "@/assets/card/revenue.png";
 import i18n from "@/translations";
-import { useAuthContext } from "@/auth/ctx";
 import { useTranslation } from "react-i18next";
 
 const TodayStatistics = () => {
-  const {tokens,account} = useAuthContext()
    
   return (
     <View style={styles.container}>

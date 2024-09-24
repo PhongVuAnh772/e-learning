@@ -182,6 +182,7 @@ const CustomerListAppointment = (customer: any) => {
 
       {
         <FlashList
+        showsVerticalScrollIndicator={false}
           data={customer?.customer}
           renderItem={({ item }) => (
             <RenderItem
