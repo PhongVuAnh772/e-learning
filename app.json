@@ -1,31 +1,29 @@
 {
   "expo": {
     "jsEngine": "hermes",
-    "name": "Education Learning",
-    "slug": "ELearning",
+    "name": "Learnifys",
+    "slug": "Learnifys",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/playstore.png",
-    "scheme": "e-learning",
+    "icon": "./assets/images/learnify.png",
+    "scheme": "learnifys.learn.app",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash/splash.jpg",
-      "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/images/learnify.png"
     },
     "ios": {
       "jsEngine": "jsc",
       "supportsTablet": true,
-      "bundleIdentifier": "vn.elearning.app",
+      "bundleIdentifier": "learnifys.learn.app",
       "googleServicesFile": "./firebase/GoogleService-Info.plist",
       "bitcode": false
     },
     "android": {
-      "package": "vn.elearning.app",
+      "package": "learnify.learn.app",
       "jsEngine": "jsc",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/playstore.png",
+        "foregroundImage": "./assets/images/learnify.png",
         "backgroundColor": "#ffffff"
       },
       "enablePngCrunchInReleaseBuilds": false,
@@ -48,7 +46,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/playstore.png"
+      "favicon": "./assets/images/learnify.png"
     },
     "plugins": [
       "expo-router",
@@ -57,7 +55,10 @@
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       [
-        "@react-native-google-signin/google-signin"
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.966849267872-6ilbh0ul236kfslupu200hvdkfg7l1lj"
+        }
       ],
       [
         "expo-image-picker",
@@ -83,7 +84,8 @@
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
@@ -91,9 +93,6 @@
     "extra": {
       "router": {
         "origin": false
-      },
-      "eas": {
-        "projectId": "d8c01670-f847-4d0e-8d82-dd54a1f0800f"
       }
     }
   }

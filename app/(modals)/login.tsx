@@ -7,46 +7,28 @@ import SearchBar from "@/components/Search/SearchBar";
 import PrimaryButton from "@/atoms/PrimaryButton";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useLoadingOverlay } from "@/components/loading/LoadingOverlay";
-import { RootState, AppDispatch } from "@/redux/store";
-import { useDispatch, useSelector } from "react-redux";
-import { handleLogin } from "@/redux/actions/auth.action";
-import useAsyncStorage from "@/hooks/useAsyncStorage";
-import { useTranslation } from "react-i18next";
+import { AppDispatch } from "@/redux/store";
+import { useDispatch } from "react-redux";
+
 import { useAuthViewModel, Strategy } from "@/features/auth";
-import auth from "@react-native-firebase/auth";
 import { useLoadingContent } from "@/components/loading/LoadingContent";
-import Typography from "@/atoms/Typography/Typography";
 import googleLogo from "@/assets/icons/google.png";
 import facebookLogo from "@/assets/icons/facebook.png";
 import githubLogo from "@/assets/icons/git-hub.png";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
-import { ActivityIndicator } from "react-native-paper";
 import * as WebBrowser from "expo-web-browser";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { app } from "@/firebase";
-import * as Google from "expo-auth-session/providers/google";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 WebBrowser.maybeCompleteAuthSession();
-import { useIdTokenAuthRequest as useGoogleIdTokenAuthRequest } from "expo-auth-session/providers/google";
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
-import { firebase } from "@react-native-firebase/auth";
-import { setDoc, doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebase";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
 interface Props {
   name: string;
   counting: number;
 }
+WebBrowser.maybeCompleteAuthSession(); // required for web only
+const redirectTo = makeRedirectUri();
 
 const Login: React.FC<Props> = ({ name, counting }) => {
-  const auth = getAuth(app);
   useWarmUpBrowser();
   const { show, hide } = useLoadingOverlay();
   const router = useRouter();
@@ -56,19 +38,7 @@ const Login: React.FC<Props> = ({ name, counting }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const { hideLoadingContent, showLoadingContent } = useLoadingContent();
-  const { error, loading } = useSelector((state: RootState) => state.auth);
-  const { data, saveData, loadingStorage } = useAsyncStorage("tokens");
   const [userInfo, setUserInfo] = useState();
-
-  const configureGoogleSignIn = () => {
-    GoogleSignin.configure({
-      webClientId:
-        "592359907391-hj0e3m7lc6l4rhauktejg0osmgnpbadb.apps.googleusercontent.com",
-      iosClientId:
-        "592359907391-00abgdkd9vhhtem3pl0b0ohr3oegdm72.apps.googleusercontent.com",
-    });
-  };
-  
 
   const discovery = {
     authorizationEndpoint: "https://github.com/login/oauth/authorize",
@@ -76,7 +46,7 @@ const Login: React.FC<Props> = ({ name, counting }) => {
     revocationEndpoint: `https://github.com/settings/connections/applications/Ov23liOVyRodoWyLgcw8`,
   };
 
-  const [request, response, promptAsync] = useAuthRequest(
+  const [response] = useAuthRequest(
     {
       clientId: `Ov23liOVyRodoWyLgcw8`,
       scopes: ["identity", "user:email", "user:follow"],
@@ -86,85 +56,25 @@ const Login: React.FC<Props> = ({ name, counting }) => {
   );
 
   const handleResponse = () => {
-    console.log(response)
-  }
-
-  React.useEffect(() => {
-  handleResponse();
-}, [response]);
-  
-  useEffect(() => {
-    configureGoogleSignIn();
-  });
-
-  const googleSignIn = async () => {
-    console.log("Pressed sign in");
-
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = (await GoogleSignin.signIn()) as any;
-      setUserInfo(userInfo as any);
-      const idToken = userInfo?.data?.idToken;
-
-      const googleCredential =
-        firebase.auth.GoogleAuthProvider.credential(idToken);
-
-      await firebase.auth().signInWithCredential(googleCredential);
-      console.log(userInfo?.data?.user);
-      const { id, name, email, photo } = userInfo?.data?.user;
-
-      const userDocRef = doc(db, "users", id);
-
-      const userDoc = await getDoc(userDocRef);
-
-      if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
-          name,
-          email,
-          photo,
-          createdAt: new Date(),
-        });
-      }
-      router.replace("(tabs)");
-    } catch (e) {
-      console.error("Google sign-in failed: ", e);
-    }
+    console.log(response);
   };
 
-  const {
-    handleLoginAction,
-    confirm,
-    setConfirm,
-    signInWithPhoneNumber,
-    loadingStrategy,
-  } = useAuthViewModel(
+  React.useEffect(() => {
+    handleResponse();
+  }, [response]);
+
+  const { performOAuthWithGithub, performOAuthWithGoogle } = useAuthViewModel(
     show,
     hide,
-    dispatch,
     navigation,
     hideLoadingContent,
     showLoadingContent,
     router,
-    auth,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword
+    redirectTo
   );
 
   const renderButtonContent = (strategy: Strategy, iconName: any) => {
-    const isLoading = loadingStrategy === strategy;
-    return (
-      <>
-        {isLoading ? (
-          <>
-            <ActivityIndicator size="small" color="#D80100" />
-          </>
-        ) : (
-          <>
-            <Image source={iconName} style={styles.logo} />
-          </>
-        )}
-      </>
-    );
+    return <Image source={iconName} style={styles.logo} />;
   };
 
   return (
@@ -219,7 +129,7 @@ const Login: React.FC<Props> = ({ name, counting }) => {
             alignSelf: "center",
           }}
           mode="contained"
-          onPress={() => handleLoginAction(username, password, setErrorMessage)}
+          onPress={performOAuthWithGithub}
         >
           {i18n.t("continue")}
         </PrimaryButton>
@@ -244,7 +154,10 @@ const Login: React.FC<Props> = ({ name, counting }) => {
             },
           ]}
         >
-          <Pressable style={styles.logoContainer} onPress={() => promptAsync()}>
+          <Pressable
+            style={styles.logoContainer}
+            onPress={() => performOAuthWithGithub()}
+          >
             {renderButtonContent(Strategy.Github, githubLogo)}
           </Pressable>
           <Pressable style={styles.logoContainer}>
@@ -253,8 +166,7 @@ const Login: React.FC<Props> = ({ name, counting }) => {
           <Pressable
             style={styles.logoContainer}
             onPress={() => {
-              console.log("ok");
-              googleSignIn();
+              performOAuthWithGoogle();
             }}
           >
             {renderButtonContent(Strategy.Google, googleLogo)}

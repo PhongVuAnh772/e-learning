@@ -1,30 +1,32 @@
-import { useLoadingContent } from "./../../components/loading/LoadingContent";
-import { handleLogin } from "@/redux/actions/auth.action";
-import i18n from "@/translations";
-import loginSticker from "@/assets/stickers/loading.png";
 import { ImageSourcePropType } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
-import { AuthState } from "@/types/auth";
-import { Dispatch, ThunkDispatch, UnknownAction } from "@reduxjs/toolkit";
-import { useCallback, useState } from "react";
-import auth from "@react-native-firebase/auth";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useNavigation } from "@react-navigation/native";
-import { usePathname } from "expo-router";
-import * as SecureStore from "expo-secure-store";
-import { ExpoRouter } from "expo-router/types/expo-router";
-import * as Linking from "expo-linking";
-import { Auth, getAuth, UserCredential } from "firebase/auth";
 
-GoogleSignin.configure({
-  webClientId: `656671118341-3u6ai43knmsqbrcuvnmvievpjj6jn0ft.apps.googleusercontent.com`,
-});
+import { useState } from "react";
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
+import { usePathname } from "expo-router";
+import { ExpoRouter } from "expo-router/types/expo-router";
+import { supabase } from "@/supabase";
+import * as WebBrowser from "expo-web-browser";
+import * as QueryParams from "expo-auth-session/build/QueryParams";
 
 export enum Strategy {
   Google = "oauth_google",
   Github = "oauth_github",
   Facebook = "oauth_facebook",
 }
+
+GoogleSignin.configure({
+  scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+  webClientId:
+    "966849267872-ui30rjss2nkrfal240vkb7hjptodre31.apps.googleusercontent.com",
+  iosClientId:
+    "966849267872-6ilbh0ul236kfslupu200hvdkfg7l1lj.apps.googleusercontent.com",
+});
 
 export const useAuthViewModel = (
   show: (
@@ -33,105 +35,81 @@ export const useAuthViewModel = (
     image?: ImageSourcePropType | undefined
   ) => void,
   hide: () => void,
-  dispatch: ThunkDispatch<
-    {
-      auth: AuthState;
-    },
-    undefined,
-    UnknownAction
-  > &
-    Dispatch<UnknownAction>,
   navigation: NavigationProp<ReactNavigation.RootParamList>,
   hideLoadingContent: () => void,
   showLoadingContent: () => void,
   router: ExpoRouter.Router,
-  auth: Auth,
-  signInWithEmailAndPassword: (
-    auth: Auth,
-    email: string,
-    password: string
-  ) => Promise<UserCredential>,
-  createUserWithEmailAndPassword: (
-    auth: Auth,
-    email: string,
-    password: string
-  ) => Promise<UserCredential>
+  redirectTo: any
 ) => {
-
   const [confirm, setConfirm] = useState(null);
-  const [userGoogle, setUser] = useState(null);
-  const [loadingStrategy, setLoadingStrategy] = useState<Strategy | null>(null);
-  
-  const path = usePathname();
 
-  const 
-  handleLoginAction = async (
-    username: string,
-    password: string,
-    setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
-  ) => {
-    if (!username || !password) {
-      setErrorMessage(i18n.t("required-login-error"));
-      return;
-    }
+  const createSessionFromUrl = async (url: string) => {
+    const { params, errorCode } = QueryParams.getQueryParams(url);
 
-    show("login-loading-title", "login-loading-description", loginSticker);
+    if (errorCode) throw new Error(errorCode);
+    const { access_token, refresh_token } = params;
 
+    if (!access_token) return;
+
+    const { data, error } = await supabase.auth.setSession({
+      access_token,
+      refresh_token,
+    });
+    console.log("datasetSession", data);
+    if (error) throw error;
+    return data.session;
+  };
+
+  const performOAuthWithGoogle = async () => {
     try {
-      signInWithEmailAndPassword(auth, username, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          console.log("user   ", user);
-          console.log("created", userCredential);
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      if (userInfo.data?.idToken) {
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: "google",
+          token: userInfo.data?.idToken,
         });
-    } catch (error: any) {
-      hide();
-      setErrorMessage(error.error);
+        console.log(error, data);
+        console.log(userInfo.data?.idToken);
+      } else {
+        throw new Error("no ID token present!");
+      }
+    } catch (error) {
+      throw new Error("no ID token present!");
     }
   };
 
-  const handleRegisterAction = async (
-    username: string,
-    password: string,
-    setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>
-  ) => {
-    if (!username || !password) {
-      setErrorMessage(i18n.t("required-login-error"));
-      return;
-    }
-    console.log(username, password);
+  const performOAuthWithGithub = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: {
+        redirectTo: redirectTo,
+        skipBrowserRedirect: true,
+      },
+    });
+    console.log(data);
+    if (error) throw error;
 
-    // show("login-loading-title", "login-loading-description", loginSticker);
+    const res = await WebBrowser.openAuthSessionAsync(
+      data?.url ?? "",
+      redirectTo
+    );
 
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, username, password);
-    const user = userCredential.user;
-    console.log(user);
-
-    } catch (error: any) {
-      hide();
-      setErrorMessage(error.error);
+    if (res.type === "success") {
+      show();
+      const { url } = res;
+      await createSessionFromUrl(url);
+      setTimeout(() => {
+        hide();
+      }, 1500);
     }
   };
-
-  async function signInWithPhoneNumber(phoneNumber: any) {
-    // const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-    // setConfirm(confirmation as any);
-  }
-  
 
   return {
-    handleLoginAction,
-    userGoogle,
+    performOAuthWithGithub,
     confirm,
     setConfirm,
-    signInWithPhoneNumber,
     Strategy,
-    loadingStrategy,
-    handleRegisterAction,
+    performOAuthWithGoogle,
   };
 };
