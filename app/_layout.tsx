@@ -1,38 +1,29 @@
 import "expo-dev-client";
 import { useFonts } from "expo-font";
-import {
-  Stack,
-  useRouter,
-  Slot,
-  useNavigationContainerRef,
-  Redirect,
-  usePathname,
-} from "expo-router";
-import { useEffect, useState } from "react";
-import * as SecureStore from "expo-secure-store";
-import { Ionicons, Entypo } from "@expo/vector-icons";
+import { Stack, useRouter } from "expo-router";
+import { useEffect } from "react";
 import Colors from "@/constants/Colors";
-import { StatusBar, TouchableOpacity, View } from "react-native";
+import {
+  StatusBar,
+  TouchableOpacity,
+  Platform,
+  UIManager,
+  StyleSheet,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 import { store } from "@/redux/store";
-import { persistor } from "@/redux/store";
-import { Text, Platform, UIManager, StyleSheet } from "react-native";
 import ButtonAdd from "@/components/Button/ButtonAdd";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import * as SplashScreen from "expo-splash-screen";
-import AuthProvider from "@/auth/ctx";
+import { AuthProvider } from "@/auth/ctx";
 import { Switch } from "react-native-switch";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign, Feather, Ionicons, Entypo } from "@expo/vector-icons";
 import { LoadingOverlayProvider } from "@/components/loading/LoadingOverlay";
 import { LoadingContentProvider } from "@/components/loading/LoadingContent";
-import { SessionProvider } from "@/common/SessionExpired";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { ToastProvider } from "@/common/ToastProvider";
-import { useTranslation } from "react-i18next";
-import i18n, { loadLocale } from "@/translations/index";
-import { useAuthViewModel } from "@/features/auth";
+import i18n from "@/translations/index";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -54,30 +45,6 @@ export default function RootLayout() {
     "manrope-bold": require("../assets/fonts/Manrope-Bold.ttf"),
     "manrope-medium": require("../assets/fonts/Manrope-Medium.ttf"),
   });
-  const tokenCache = {
-    async getToken(key: string) {
-      try {
-        const item = await SecureStore.getItemAsync(key);
-        if (item) {
-          console.log(`${key} was used 🔐 \n`);
-        } else {
-          console.log("No values stored under key: " + key);
-        }
-        return item;
-      } catch (error) {
-        console.error("SecureStore get item error: ", error);
-        await SecureStore.deleteItemAsync(key);
-        return null;
-      }
-    },
-    async saveToken(key: string, value: string) {
-      try {
-        return SecureStore.setItemAsync(key, value);
-      } catch (err) {
-        return;
-      }
-    },
-  };
 
   useEffect(() => {
     if (error) throw error;
@@ -97,21 +64,23 @@ export default function RootLayout() {
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
-          <RootSiblingParent>
-            <LoadingOverlayProvider>
-              <LoadingContentProvider>
-                <ToastProvider>
-                  {Platform.OS === "ios" && (
-                    <StatusBar barStyle="light-content" />
-                  )}
-                  {Platform.OS === "android" && (
-                    <StatusBar barStyle="light-content" />
-                  )}
-                  <RootLayoutNav />
-                </ToastProvider>
-              </LoadingContentProvider>
-            </LoadingOverlayProvider>
-          </RootSiblingParent>
+          <AuthProvider>
+            <RootSiblingParent>
+              <LoadingOverlayProvider>
+                <LoadingContentProvider>
+                  <ToastProvider>
+                    {Platform.OS === "ios" && (
+                      <StatusBar barStyle="light-content" />
+                    )}
+                    {Platform.OS === "android" && (
+                      <StatusBar barStyle="light-content" />
+                    )}
+                    <RootLayoutNav />
+                  </ToastProvider>
+                </LoadingContentProvider>
+              </LoadingOverlayProvider>
+            </RootSiblingParent>
+          </AuthProvider>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </Provider>
@@ -120,12 +89,6 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const router = useRouter();
-  const navigation = useNavigationContainerRef();
-  const path = usePathname();
-
-  useEffect(() => {
-    router.replace("(modals)/login");
-  }, []);
 
   return (
     <Stack initialRouteName="(modals)/loading">

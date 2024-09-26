@@ -19,7 +19,6 @@ import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
 WebBrowser.maybeCompleteAuthSession();
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 interface Props {
   name: string;
@@ -63,7 +62,12 @@ const Login: React.FC<Props> = ({ name, counting }) => {
     handleResponse();
   }, [response]);
 
-  const { performOAuthWithGithub, performOAuthWithGoogle } = useAuthViewModel(
+  const {
+    performOAuthWithGithub,
+    performOAuthWithGoogle,
+    signInWithFacebook,
+    signUpWithCommonAuth,
+  } = useAuthViewModel(
     show,
     hide,
     navigation,
@@ -129,7 +133,7 @@ const Login: React.FC<Props> = ({ name, counting }) => {
             alignSelf: "center",
           }}
           mode="contained"
-          onPress={performOAuthWithGithub}
+          onPress={signUpWithCommonAuth}
         >
           {i18n.t("continue")}
         </PrimaryButton>
@@ -160,7 +164,10 @@ const Login: React.FC<Props> = ({ name, counting }) => {
           >
             {renderButtonContent(Strategy.Github, githubLogo)}
           </Pressable>
-          <Pressable style={styles.logoContainer}>
+          <Pressable
+            style={styles.logoContainer}
+            onPress={() => signInWithFacebook()}
+          >
             {renderButtonContent(Strategy.Facebook, facebookLogo)}
           </Pressable>
           <Pressable

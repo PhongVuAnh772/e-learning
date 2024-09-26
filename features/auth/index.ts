@@ -60,6 +60,39 @@ export const useAuthViewModel = (
     return data.session;
   };
 
+  async function signUpWithCommonAuth() {
+    const { data, error } = await supabase.auth.signUp({
+      email: "vuanhphong1701@email.com",
+      password: "Phongnd2209@",
+      options: {},
+    });
+  }
+
+  async function signInWithFacebook() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "facebook",
+      options: {
+        redirectTo: redirectTo,
+        skipBrowserRedirect: true,
+      },
+    });
+    if (error) throw error;
+
+    const res = await WebBrowser.openAuthSessionAsync(
+      data?.url ?? "",
+      redirectTo
+    );
+
+    if (res.type === "success") {
+      show();
+      const { url } = res;
+      await createSessionFromUrl(url);
+      setTimeout(() => {
+        hide();
+      }, 1500);
+    }
+  }
+
   const performOAuthWithGoogle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
@@ -111,5 +144,7 @@ export const useAuthViewModel = (
     setConfirm,
     Strategy,
     performOAuthWithGoogle,
+    signInWithFacebook,
+    signUpWithCommonAuth,
   };
 };

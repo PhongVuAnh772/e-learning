@@ -5,30 +5,16 @@ import {
   ImageBackground,
   Image,
   TouchableOpacity,
-  Platform,
-  ScrollView,
 } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useState } from "react";
-import Colors from "@/constants/Colors";
-import { Ionicons } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import i18n from "@/translations/index";
 import background from "@/assets/images/background-home.png";
 import bellIcon from "@/assets/icons/bell-icon.png";
 import ActionRow from "@/components/action-header/ActionRow";
 import SearchBar from "@/components/Search/SearchBar";
-import shoppingIcon from "@/assets/icons/shopping.png";
 import searchIcon from "@/assets/icons/search.png";
-import { fetchSearchingCampaign } from "@/services/search.service";
-import { useAppSelector } from "@/redux/store";
-import { getProfileFromState } from "@/auth/ctx";
-import { useTranslation } from "react-i18next";
 
 interface Props {
   avatar_url: string;
@@ -37,14 +23,13 @@ interface Props {
 }
 
 const ExploreHeader: React.FC<Props> = ({ avatar_url, name, counting }) => {
-   
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const handleEnterPress = async () => {
     router.push({
-        pathname: "(modals)/searching",
-        params: { agency: searchValue },
-      });
+      pathname: "(modals)/searching",
+      params: { agency: searchValue },
+    });
   };
   return (
     <ImageBackground

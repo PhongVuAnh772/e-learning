@@ -1,112 +1,62 @@
 import React, {
-  PropsWithChildren,
-  useEffect,
   useState,
-  useContext,
+  useEffect,
   createContext,
-  useRef,
-  useLayoutEffect,
+  PropsWithChildren,
 } from "react";
-import { useNavigation, useRouter } from "expo-router";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { getProfile } from "@/redux/actions/auth.action";
-import useAsyncStorage from "@/hooks/useAsyncStorage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import store from "@/redux/store";
-import { DELETE_SESSION_AUTH } from "@/redux/slices/auth.slice";
-import auth from '@react-native-firebase/auth';
+import { Session, User } from "@supabase/supabase-js";
+import { supabase } from "@/supabase";
+import { useRouter } from "expo-router";
 
-interface AuthContextType {
-  loggedIn: boolean;
-  account: any;
-  tokens: any;
-  setTokens: React.Dispatch<React.SetStateAction<any>>;
-  setAccount: React.Dispatch<React.SetStateAction<any>>;
+type AuthProps = {
+  user: User | null;
+  session: Session | null;
+  initialized?: boolean;
+  signOut?: () => void;
+};
+
+export const AuthContext = createContext<Partial<AuthProps>>({});
+
+// Custom hook to read the context values
+export function useAuth() {
+  return React.useContext(AuthContext);
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
-
-export const getProfileFromState = () => {
-  const state = store.getState();
-  const profile = state.auth.account?.info_member;
-  return profile;
-};
-
-export const getTokenFromState = () => {
-  const state = store.getState();
-  const profile = state.auth.account?.info_member?.token;
-  return profile;
-};
-
-export const useAuthContext = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuthContext must be used within an AuthProvider");
-  }
-  return context;
-};
-
-const AuthProvider = ({ children }: PropsWithChildren) => {
-  const dispatch = useAppDispatch();
-  const navigation = useNavigation();
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [account, setAccount] = useState<any>([]);
-  const [tokens, setTokens] = useState<any>(
-    useAsyncStorage("tokens") as any | null
-  );
-  const [initializing, setInitializing] = useState(true);
-
-  function onAuthStateChanged(user: any) {
-    setAccount(user);
-    if (initializing) setInitializing(false);
-  }
+export const AuthProvider = ({ children }: PropsWithChildren) => {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>();
+  const [session, setSession] = useState<Session | null>(null);
+  const [initialized, setInitialized] = useState<boolean>(false);
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      const tokens = await AsyncStorage.getItem("tokens");
-      const agency = await AsyncStorage.getItem("agency");
-      try {
-        if (agency) {
-            const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-            navigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: account ? "(tabs)" : "(modals)/login",
-                } as any,
-              ],
-            });
-            return subscriber;
-        } else { 
-          navigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: "choosing/index",
-              } as any,
-            ],
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        setLoggedIn(false);
-      }
+    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      setUser(session ? session.user : null);
+      setInitialized(true);
+    });
+    return () => {
+      data.subscription.unsubscribe();
     };
-
-    initializeAuth();
   }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{ loggedIn, account, tokens, setTokens, setAccount }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  useEffect(() => {
+    if (session) {
+      router.push("/(tabs)");
+    } else {
+      router.push("/(modals)/login");
+    }
+  }, [session, user]);
+
+  const value = {
+    user,
+    session,
+    initialized,
+    signOut,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-export const useLogin = () => {};
-
-export default AuthProvider;

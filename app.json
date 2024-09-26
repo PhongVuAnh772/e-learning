@@ -57,7 +57,8 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrlScheme": "com.googleusercontent.apps.966849267872-6ilbh0ul236kfslupu200hvdkfg7l1lj"
+          "iosUrlScheme": "com.googleusercontent.apps.966849267872-6ilbh0ul236kfslupu200hvdkfg7l1lj",
+          "certificateHash":"23:51:60:DD:44:3E:C0:BA:06:5D:70:21:BD:E9:BE:CD:D2:6D:8B:5A"
         }
       ],
       [
@@ -93,6 +94,9 @@
     "extra": {
       "router": {
         "origin": false
+      },
+      "eas": {
+        "projectId": "0d2e8b8a-f365-46be-bf0f-175ed0cd3362"
       }
     }
   }
