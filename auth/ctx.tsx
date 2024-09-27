@@ -1,12 +1,12 @@
+import { supabase } from "@/supabase";
+import { Session, User } from "@supabase/supabase-js";
+import { useRouter } from "expo-router";
 import React, {
-  useState,
-  useEffect,
   createContext,
   PropsWithChildren,
+  useEffect,
+  useState,
 } from "react";
-import { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/supabase";
-import { useRouter } from "expo-router";
 
 type AuthProps = {
   user: User | null;
@@ -22,12 +22,13 @@ export function useAuth() {
   return React.useContext(AuthContext);
 }
 
+const EXPO_ACCESS_STREAM_KEY_PASSWORD =
+  process.env.EXPO_ACCESS_STREAM_KEY_PASSWORD;
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>();
   const [session, setSession] = useState<Session | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
-
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);

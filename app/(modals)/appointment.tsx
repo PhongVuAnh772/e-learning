@@ -1,33 +1,31 @@
+import { actionCaring, statusCaring } from "@/assets/data/caring";
+import verifiedIcon from "@/assets/icons/verified.png";
+import ScreenHeader from "@/atoms/HeaderComponent";
+import PrimaryButton from "@/atoms/PrimaryButton";
+import DateTimePicker from "@/common/DateTimePicker";
+import { useSession } from "@/common/SessionExpired";
+import { useLoadingContent } from "@/components/loading/LoadingContent";
+import SearchBar from "@/components/Search/SearchBar";
+import { blurhash } from "@/constants/BlurHash";
+import { parseDateTime } from "@/helpers/parseDateHelpers";
+import { ActionCaringType, handleCaring } from "@/services/caring.service";
+import i18n from "@/translations";
+import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import { Image } from "expo-image";
+import { useLocalSearchParams } from "expo-router";
+import React, { useState } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  Platform,
-  KeyboardAvoidingView,
-  ScrollView,
 } from "react-native";
-import React, { useState } from "react";
-import ScreenHeader from "@/atoms/HeaderComponent";
-import i18n from "@/translations";
-import { useLocalSearchParams } from "expo-router";
-import { Image } from "expo-image";
-import { blurhash } from "@/constants/BlurHash";
-import verifiedIcon from "@/assets/icons/verified.png";
-import SearchBar from "@/components/Search/SearchBar";
-import PrimaryButton from "@/atoms/PrimaryButton";
-import DateTimePicker from "@/common/DateTimePicker";
-import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import DropdownPicker from "../common/DropdownPicker";
-import { actionCaring, statusCaring } from "@/assets/data/caring";
-import { ActionCaringType, handleCaring } from "@/services/caring.service";
-import { useLoadingContent } from "@/components/loading/LoadingContent";
-import { getTokenFromState } from "@/auth/ctx";
-import { parseDateTime } from "@/helpers/parseDateHelpers";
-import { useSession } from "@/common/SessionExpired";
-import { useTranslation } from "react-i18next";
 const Appointment = () => {
   const params = useLocalSearchParams();
-   
+
   const { itemString } = params;
   const { showLoadingContent, hideLoadingContent } = useLoadingContent();
   const item = itemString ? JSON.parse(itemString as any) : null;
@@ -40,20 +38,26 @@ const Appointment = () => {
   const [valueActionDropdown, setValueActionDropdown] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const token = getTokenFromState();
-  const {showSessionWarning,hideSessionWarning} = useSession();
+  const token = "";
+  const { showSessionWarning, hideSessionWarning } = useSession();
   const onChangeDate = (event: DateTimePickerEvent, date?: Date) => {
     setValueDatePicker(date || new Date());
   };
 
   const handleContinue = async () => {
     showLoadingContent();
-    const response = await handleCaring(token as string,item.id,contentValue,valueActionDropdown as ActionCaringType, parseDateTime(valueDatePicker) as string);
+    const response = await handleCaring(
+      token as string,
+      item.id,
+      contentValue,
+      valueActionDropdown as ActionCaringType,
+      parseDateTime(valueDatePicker) as string
+    );
     console.log(response);
     // showSessionWarning("login-session-title", "login-session-description");
   };
-  
-  return (  
+
+  return (
     <React.Fragment>
       <KeyboardAvoidingView
         style={styles.container}
