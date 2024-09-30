@@ -1,29 +1,29 @@
+import { AuthProvider } from "@/auth/ctx";
+import { ToastProvider } from "@/common/ToastProvider";
+import ButtonAdd from "@/components/Button/ButtonAdd";
+import { LoadingContentProvider } from "@/components/loading/LoadingContent";
+import { LoadingOverlayProvider } from "@/components/loading/LoadingOverlay";
+import Colors from "@/constants/Colors";
+import { store } from "@/redux/store";
+import i18n from "@/translations/index";
+import { AntDesign, Entypo, Feather, Ionicons } from "@expo/vector-icons";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import "expo-dev-client";
 import { useFonts } from "expo-font";
 import { Stack, useRouter } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import Colors from "@/constants/Colors";
 import {
-  StatusBar,
-  TouchableOpacity,
   Platform,
-  UIManager,
+  StatusBar,
   StyleSheet,
+  TouchableOpacity,
+  UIManager,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Provider } from "react-redux";
-import { store } from "@/redux/store";
-import ButtonAdd from "@/components/Button/ButtonAdd";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import * as SplashScreen from "expo-splash-screen";
-import { AuthProvider } from "@/auth/ctx";
-import { Switch } from "react-native-switch";
-import { AntDesign, Feather, Ionicons, Entypo } from "@expo/vector-icons";
-import { LoadingOverlayProvider } from "@/components/loading/LoadingOverlay";
-import { LoadingContentProvider } from "@/components/loading/LoadingContent";
 import { RootSiblingParent } from "react-native-root-siblings";
-import { ToastProvider } from "@/common/ToastProvider";
-import i18n from "@/translations/index";
+import { Switch } from "react-native-switch";
+import { Provider } from "react-redux";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -111,6 +111,13 @@ function RootLayoutNav() {
         name="(modals)/login"
         options={{
           animation: "slide_from_bottom",
+          title: i18n.t("login-title"),
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="in-call/index"
+        options={{
           title: i18n.t("login-title"),
           headerShown: false,
         }}

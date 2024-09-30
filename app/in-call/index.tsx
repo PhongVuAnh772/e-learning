@@ -1,11 +1,11 @@
-import { Avatar, Control } from "@/components/realtime";
+import { Avatar, Control, DraggableStream } from "@/components/realtime";
 import {
   FirestoreCollections,
   peerConstraints,
   sessionConstraints,
 } from "@/constants/realtime";
 import { useStateRef } from "@/hooks/usePermission";
-import { colors, isIOS } from "@/theme/other/themes";
+import { colors, metrics } from "@/theme/other/themes";
 import { MediaControl, Screen } from "@/types/realtime";
 import firestore, {
   FirebaseFirestoreTypes,
@@ -13,18 +13,8 @@ import firestore, {
 } from "@react-native-firebase/firestore";
 import { useCameraPermissions, useMicrophonePermissions } from "expo-camera";
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Alert,
-  Dimensions,
-  Keyboard,
-  KeyboardAvoidingView,
-  Pressable,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Alert, Dimensions, ScrollView, Text, View } from "react-native";
 import {
   MediaStream,
   RTCIceCandidate,
@@ -33,7 +23,7 @@ import {
   RTCView,
   mediaDevices,
 } from "react-native-webrtc";
-import { styles } from "../calling/styles";
+import { styles } from "./styles";
 
 const { width, height } = Dimensions.get("screen");
 const database = firestore();
@@ -47,6 +37,7 @@ const CallingDashboard = () => {
   const [remoteMedias, setRemoteMedias, remoteMediasRef] = useStateRef<{
     [key: string]: MediaControl;
   }>({});
+
   const [remoteStreams, setRemoteStreams, remoteStreamsRef] = useStateRef<{
     [key: string]: MediaStream;
   }>({});
@@ -57,6 +48,7 @@ const CallingDashboard = () => {
   const [permissionCamera, requestPermissionCamera] = useCameraPermissions();
   const [statusMicrophone, requestPermissionMicrophone] =
     useMicrophonePermissions();
+  const [mirror, setMirror] = useState(true);
 
   const cameraPermissionGranted = permissionCamera?.granted as boolean;
   const microphonePermissionGranted = statusMicrophone?.granted as boolean;
@@ -64,6 +56,55 @@ const CallingDashboard = () => {
     mic: microphonePermissionGranted,
     camera: cameraPermissionGranted,
   });
+  const mediaDimension = useMemo(
+    () => ({
+      width: width / (totalParticipants > 3 ? 2 : 1),
+      height: height / (totalParticipants > 2 ? 2 : 1),
+    }),
+    [totalParticipants]
+  );
+  const renderRemoteStreams = useCallback(
+    () =>
+      !!remoteStreams &&
+      Object.keys(remoteStreams).map((remoteStreamKey) => {
+        const stream = remoteStreams[remoteStreamKey];
+        const media = remoteMedias[remoteStreamKey];
+        return (
+          <View key={remoteStreamKey}>
+            {media?.camera ? (
+              <View style={mediaDimension} key={remoteStreamKey}>
+                <RTCView
+                  streamURL={stream?.toURL()}
+                  style={styles.flex}
+                  objectFit="cover"
+                />
+                {!media?.mic && (
+                  <Control
+                    showMuteAudio
+                    muteAudioColor={colors.white}
+                    containerStyle={styles.remoteControlWithCameraOn}
+                  />
+                )}
+              </View>
+            ) : (
+              <View
+                key={`${remoteStreamKey}-noCamera`}
+                style={[styles.noCameraInRoom, mediaDimension]}
+              >
+                <Avatar title={remoteStreamKey} />
+                {!media?.mic && (
+                  <Control
+                    showMuteAudio
+                    containerStyle={styles.remoteControlContainer}
+                  />
+                )}
+              </View>
+            )}
+          </View>
+        );
+      }),
+    [mediaDimension, remoteMedias, remoteStreams]
+  );
 
   const listenPeerConnections = useCallback(
     async (
@@ -343,7 +384,7 @@ const CallingDashboard = () => {
       name: userName,
     });
     setRoomId(roomRef.id); // store new created roomId
-    router.push("/in-call");
+    setScreen(Screen.InRoomCall); // navigate to InRoomCall screen
 
     // add listener to new peer connection in Firestore
     await listenPeerConnections(roomRef, userName);
@@ -507,8 +548,7 @@ const CallingDashboard = () => {
     userName,
   ]);
 
-  const hangUp = useCallback(async () => {
-    // stop local stream
+  const hangUp = async () => {
     localStream?.getTracks()?.forEach((track) => {
       track.stop();
     });
@@ -555,6 +595,7 @@ const CallingDashboard = () => {
       // delete current room detail data and this room in Rooms
       await batch.commit();
       await roomRef.delete();
+      router.back();
     } else {
       // delete user data in Participants collection
       await roomRef
@@ -597,6 +638,7 @@ const CallingDashboard = () => {
         // delete connection detail and remove it from Connections
         await batch.commit();
         doc.ref.delete();
+        router.back();
       });
     }
 
@@ -612,20 +654,8 @@ const CallingDashboard = () => {
     if (localMediaControl?.camera || localMediaControl?.mic) {
       openMediaDevices(localMediaControl?.mic, localMediaControl?.camera);
     }
-  }, [
-    localStream,
-    remoteStreams,
-    peerConnections,
-    roomId,
-    totalParticipants,
-    setRemoteMedias,
-    setRemoteStreams,
-    setPeerConnections,
-    localMediaControl?.camera,
-    localMediaControl?.mic,
-    userName,
-    openMediaDevices,
-  ]);
+    router.back();
+  };
 
   useEffect(() => {
     setLocalMediaControl({
@@ -697,74 +727,40 @@ const CallingDashboard = () => {
     setRemoteMedias,
     setRemoteStreams,
   ]);
+
+  const flipCamera = () => {
+    setMirror(!mirror);
+  };
   return (
-    <KeyboardAvoidingView
-      behavior={isIOS ? "padding" : "height"}
-      style={[styles.container, styles.spacingBottom]}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.flex}>
-        <>
-          {localStream && localMediaControl?.camera ? (
-            <View style={styles.localStream}>
-              <RTCView
-                streamURL={localStream.toURL()}
-                style={styles.flex}
-                mirror={true}
-              />
-              {!localMediaControl?.mic && (
-                <Control
-                  showMuteAudio
-                  muteAudioColor={colors.white}
-                  containerStyle={styles.localControl}
-                />
-              )}
-            </View>
-          ) : (
-            <View style={styles.noCamera}>
-              <Avatar title={userName} />
-              {!localMediaControl?.mic && (
-                <Control
-                  showMuteAudio
-                  containerStyle={styles.remoteControlContainer}
-                />
-              )}
-            </View>
-          )}
-          <Control
-            mediaControl={localMediaControl}
-            toggleMicrophone={toggleMicrophone}
-            toggleCamera={toggleCamera}
-          />
-          <TextInput
-            style={styles.nameInput}
-            value={userName}
-            placeholder="Enter display name"
-            onChangeText={setUserName}
-          />
-          <Pressable
-            style={[styles.button, !userName && styles.buttonDisabled]}
-            onPress={createRoom}
-            disabled={!userName}
-          >
-            <Text style={styles.buttonTitle}>Create room</Text>
-          </Pressable>
-          <View style={styles.joinContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter room id"
-              onChangeText={setRoomId}
-            />
-            <Pressable
-              style={[styles.joinButton, !roomId && styles.buttonDisabled]}
-              onPress={checkRoomExist}
-              disabled={!roomId}
-            >
-              <Text style={styles.buttonTitle}>Join</Text>
-            </Pressable>
-          </View>
-        </>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    <View style={styles.container}>
+      {totalParticipants === 1 ? (
+        <View style={styles.noUsersContainer}>
+          <Text style={styles.noUserText}>
+            No one here.{"\n"}Share your room ID for other users to join
+          </Text>
+        </View>
+      ) : (
+        <ScrollView>
+          <View style={styles.flexWrap}>{renderRemoteStreams()}</View>
+        </ScrollView>
+      )}
+      <DraggableStream
+        stream={localStream}
+        mediaControl={localMediaControl}
+        title={userName}
+        mirror={mirror}
+        flipCamera={flipCamera}
+      />
+      {/* <Clipboard title={roomId} /> */}
+      <Control
+        hangUp={hangUp}
+        mediaControl={localMediaControl}
+        toggleMicrophone={toggleMicrophone}
+        toggleCamera={toggleCamera}
+        containerStyle={styles.controlContainer}
+        iconSize={metrics.sMedium}
+      />
+    </View>
   );
 };
 

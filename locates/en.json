@@ -164,5 +164,7 @@
   "empty-history-caring": "No actions have been taken with this user",
   "empty-history-caring-action": "Add Action",
   "content":"Content",
-  "zoom-title":"Meeting"
+  "zoom-title":"Meeting",
+    "study-and-work": "Study and work"
+
 }

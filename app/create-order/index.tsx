@@ -1,24 +1,23 @@
+import verifiedIcon from "@/assets/icons/verified.png";
+import ScreenHeader from "@/atoms/HeaderComponent";
+import PrimaryButton from "@/atoms/PrimaryButton";
+import DateTimePicker from "@/common/DateTimePicker";
+import SearchBar from "@/components/Search/SearchBar";
+import { blurhash } from "@/constants/BlurHash";
+import i18n from "@/translations";
+import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import { Image } from "expo-image";
+import { useLocalSearchParams } from "expo-router";
+import React, { useState } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  Platform,
-  KeyboardAvoidingView,
-  ScrollView,
 } from "react-native";
-import React, { useState } from "react";
-import ScreenHeader from "@/atoms/HeaderComponent";
-import i18n from "@/translations";
-import { useLocalSearchParams } from "expo-router";
-import { Image } from "expo-image";
-import { blurhash } from "@/constants/BlurHash";
-import verifiedIcon from "@/assets/icons/verified.png";
-import SearchBar from "@/components/Search/SearchBar";
-import PrimaryButton from "@/atoms/PrimaryButton";
-import DateTimePicker from "@/common/DateTimePicker";
-import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import DropdownPicker from "../common/DropdownPicker";
-import { useTranslation } from "react-i18next";
 
 const CreatingAppointment = () => {
   const params = useLocalSearchParams();
@@ -34,7 +33,7 @@ const CreatingAppointment = () => {
   const onChangeDate = (event: DateTimePickerEvent, date?: Date) => {
     setValueDatePicker(date || new Date());
   };
- 
+
   return (
     <React.Fragment>
       <KeyboardAvoidingView

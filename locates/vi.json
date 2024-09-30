@@ -1,7 +1,7 @@
 {
   "home-tab": "Trang chủ",
   "report-tab": "Báo cáo",
-  "customer-tab": "Khách hàng",
+  "customer-tab": "Học & thi",
   "order-tab": "Đơn hàng",
   "user-tab": "Tài khoản",
   "dealer-lookup": "Tra cứu đại lý",
@@ -169,5 +169,6 @@
   "greeting-register": "Rất vui được gặp bạn.",
   "invite-register": "Đăng ký để sử dụng dịch vụ",
   "overlay-register": "Hãy nhập thông tin tài khoản và mật khẩu của bạn đang quán lý",
-  "zoom-title":"Cuộc họp"
+  "zoom-title":"Cuộc họp",
+  "study-and-work": "Học và thi"
 }

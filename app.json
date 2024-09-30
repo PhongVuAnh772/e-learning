@@ -16,7 +16,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "learnifys.learn.app",
       "googleServicesFile": "./firebase/GoogleService-Info.plist",
-      "bitcode": false
+      "bitcode": false,
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use FaceID"
+      }
     },
     "android": {
       "package": "learnify.learn.app",
@@ -53,12 +56,18 @@
       "expo-localization",
       "expo-calendar",
       "@react-native-firebase/app",
-      "@react-native-firebase/auth",
       [
-        "@react-native-google-signin/google-signin",
+        "expo-local-authentication",
         {
-          "iosUrlScheme": "com.googleusercontent.apps.966849267872-6ilbh0ul236kfslupu200hvdkfg7l1lj",
-          "certificateHash":"23:51:60:DD:44:3E:C0:BA:06:5D:70:21:BD:E9:BE:CD:D2:6D:8B:5A"
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
         }
       ],
       [
@@ -78,16 +87,7 @@
           }
         }
       ],
-      "@stream-io/video-react-native-sdk",
-      [
-        "@config-plugins/react-native-webrtc",
-        {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
-        }
-      ],
-      "expo-secure-store"
-    ],
+      "expo-secure-store"],
     "experiments": {
       "typedRoutes": true
     },

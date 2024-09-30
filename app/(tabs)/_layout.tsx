@@ -1,12 +1,11 @@
-import { Tabs } from "expo-router";
+import OrderIcon from "@/components/tab-icons/OrderIcon";
+import ReportIcon from "@/components/tab-icons/ReportIcon";
+import SettingIcon from "@/components/tab-icons/SettingIcon";
+import HomeIcon from "@/components/tab-icons/homeIcon";
 import Colors from "@/constants/Colors";
 import i18n from "@/translations";
-import HomeIcon from "@/components/tab-icons/homeIcon";
-import ReportIcon from "@/components/tab-icons/ReportIcon";
-import CustomerIcon from "@/components/tab-icons/CustomerIcon";
-import OrderIcon from "@/components/tab-icons/OrderIcon";
-import SettingIcon from "@/components/tab-icons/SettingIcon";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { Tabs } from "expo-router";
 
 const Layout = () => {
   return (
@@ -40,19 +39,20 @@ const Layout = () => {
       <Tabs.Screen
         name="explore"
         options={{
-          tabBarLabel: i18n.t("customer-tab"),
+          tabBarLabel: i18n.t("study-and-work"),
           tabBarIcon: ({ size, color, focused }) => (
-            <AntDesign name="wechat" size={size} color={color} />
+            <OrderIcon size={size} color={color} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
         name="message"
         options={{
-          tabBarLabel: i18n.t("order-tab"),
+          tabBarLabel: i18n.t("zoom-title"),
           tabBarIcon: ({ size, color, focused }) => (
-            <OrderIcon size={size} color={color} focused={focused} />
+            <AntDesign name="wechat" size={size} color={color} />
           ),
+          headerShown: false,
         }}
       />
       <Tabs.Screen

@@ -33,7 +33,7 @@ import {
   RTCView,
   mediaDevices,
 } from "react-native-webrtc";
-import { styles } from "../calling/styles";
+import { styles } from "./styles";
 
 const { width, height } = Dimensions.get("screen");
 const database = firestore();
@@ -329,23 +329,19 @@ const CallingDashboard = () => {
   );
 
   const createRoom = useCallback(async () => {
-    // create room with current userName and set createdDate as current datetime
     const roomRef = database
       .collection(FirestoreCollections.rooms)
       .doc(userName);
     await roomRef.set({ createdDate: new Date() });
 
-    // create participants collection to room "userName"
     roomRef.collection(FirestoreCollections.participants).doc(userName).set({
-      // control mic and camera status of current user's device
       mic: localMediaControl?.mic,
       camera: localMediaControl?.camera,
       name: userName,
     });
-    setRoomId(roomRef.id); // store new created roomId
+    setRoomId(roomRef.id);
     router.push("/in-call");
 
-    // add listener to new peer connection in Firestore
     await listenPeerConnections(roomRef, userName);
   }, [
     userName,
@@ -373,7 +369,7 @@ const CallingDashboard = () => {
 
       // also listen to new coming PeerConnections
       await listenPeerConnections(roomRef, userName);
-      setScreen(Screen.InRoomCall); // navigate to InRoomCall screen
+      router.push("/in-call");
     },
     [
       userName,
