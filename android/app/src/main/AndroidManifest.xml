@@ -37,7 +37,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="learnifys.learn.app"/>
-        <data android:scheme="learnify.learn.app"/>
+        <data android:scheme="learnifys.learn.app"/>
         <data android:scheme="exp+learnifys"/>
       </intent-filter>
     </activity>

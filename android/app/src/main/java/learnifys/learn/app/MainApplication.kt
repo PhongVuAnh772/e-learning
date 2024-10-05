@@ -1,4 +1,4 @@
-package learnify.learn.app
+package learnifys.learn.app
 
 import android.app.Application
 import android.content.res.Configuration

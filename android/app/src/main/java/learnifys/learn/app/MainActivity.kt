@@ -1,4 +1,4 @@
-package learnify.learn.app
+package learnifys.learn.app
 import com.oney.WebRTCModule.WebRTCModuleOptions
 import android.app.PictureInPictureParams
 import androidx.lifecycle.Lifecycle

@@ -114,9 +114,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'learnify.learn.app'
+    namespace 'learnifys.learn.app'
     defaultConfig {
-        applicationId 'learnify.learn.app'
+        applicationId 'learnifys.learn.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
