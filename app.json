@@ -29,11 +29,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/learnify.png",
         "backgroundColor": "#ffffff"
-      },
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.INTERNET"
-      ]    },
+      }
+    },
     "web": {
       "bundler": "metro",
       "output": "static",

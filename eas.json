@@ -9,7 +9,6 @@
     },
     "preview": {
       "distribution": "internal"
-
     },
     "production": {},
     "development-simulator": {

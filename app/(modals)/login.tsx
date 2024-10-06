@@ -190,7 +190,7 @@ const Login: React.FC<Props> = ({ name, counting }) => {
             alignSelf: "center",
           }}
           mode="contained"
-          onPress={() => router.push("(modals)/register")}
+          onPress={() => router.push("(modals)/register" as any)}
         >
           <Text style={{ color: "black" }}>{i18n.t("register")}</Text>
         </PrimaryButton>
