@@ -4,6 +4,7 @@ import ButtonAdd from "@/components/Button/ButtonAdd";
 import { LoadingContentProvider } from "@/components/loading/LoadingContent";
 import { LoadingOverlayProvider } from "@/components/loading/LoadingOverlay";
 import Colors from "@/constants/Colors";
+import { usePushNotifications } from "@/hooks/useNotificationHelper";
 import { store } from "@/redux/store";
 import i18n from "@/translations/index";
 import { AntDesign, Entypo, Feather, Ionicons } from "@expo/vector-icons";
@@ -24,6 +25,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { Switch } from "react-native-switch";
 import { Provider } from "react-redux";
+import * as Notifications from "expo-notifications";
+import { NotificationProvider } from "@/components/notifications";
+import { AndroidNotificationPriority } from "expo-notifications";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,6 +37,30 @@ if (
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
+
+Notifications.setNotificationHandler({
+  handleNotification: async (notification: any) => {
+    console.log(notification)
+    const isManualAndroidNotification = Platform.OS === 'android' && !notification.request.trigger;
+    if (Platform.OS === 'android' && notification.request.trigger) {
+      const appNotification = notification.request.trigger['remoteMessage'].notification;
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: appNotification?.title || '',
+          body: appNotification?.body || '',
+          sound: true,
+        },
+        trigger: null,
+      });
+    }
+
+    return {
+      shouldShowAlert: Platform.OS === 'ios' || isManualAndroidNotification,
+      shouldPlaySound: Platform.OS === 'ios' || isManualAndroidNotification,
+      shouldSetBadge: false,
+    };
+  },
+});
 
 export default function RootLayout() {
   const router = useRouter();
@@ -45,7 +73,7 @@ export default function RootLayout() {
     "manrope-bold": require("../assets/fonts/Manrope-Bold.ttf"),
     "manrope-medium": require("../assets/fonts/Manrope-Medium.ttf"),
   });
-
+  
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -64,6 +92,7 @@ export default function RootLayout() {
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
+          <NotificationProvider>
           <AuthProvider>
             <RootSiblingParent>
               <LoadingOverlayProvider>
@@ -81,6 +110,7 @@ export default function RootLayout() {
               </LoadingOverlayProvider>
             </RootSiblingParent>
           </AuthProvider>
+          </NotificationProvider>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </Provider>

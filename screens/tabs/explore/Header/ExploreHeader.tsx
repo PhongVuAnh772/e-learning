@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useRouter } from "expo-router";
 import i18n from "@/translations/index";
 import background from "@/assets/images/background-home.png";
@@ -27,10 +27,22 @@ const ExploreHeader: React.FC<Props> = ({ avatar_url, name, counting }) => {
   const [searchValue, setSearchValue] = useState("");
   const handleEnterPress = async () => {
     router.push({
-      pathname: "(modals)/searching",
+      pathname: "(modals)/searching" as any,
       params: { agency: searchValue },
     });
   };
+  const getCurrentGreeting = useCallback(() => {
+    const currentHour = new Date().getHours();
+    
+    if (currentHour < 12) {
+      return i18n.t('good-morning');
+    } else if (currentHour < 18) {
+      return i18n.t('good-afternoon');
+    } else {
+      return i18n.t('good-evening');
+    }
+  },[]);
+  console.log(getCurrentGreeting())
   return (
     <ImageBackground
       style={styles.container}
@@ -47,7 +59,7 @@ const ExploreHeader: React.FC<Props> = ({ avatar_url, name, counting }) => {
               style={styles.avatar}
             />
             <View style={styles.textContainer}>
-              <Text style={styles.greeting}>{i18n.t("good-morning")}</Text>
+              <Text style={styles.greeting}>{getCurrentGreeting()}</Text>
               <Text style={styles.name}>{name}</Text>
             </View>
           </View>

@@ -1,6 +1,6 @@
 import { supabase } from "@/supabase";
 import { Session, User } from "@supabase/supabase-js";
-import { useRouter } from "expo-router";
+import { SplashScreen, useRouter } from "expo-router";
 import React, {
   createContext,
   PropsWithChildren,
@@ -41,15 +41,25 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   const signOut = async () => {
+  try {
     await supabase.auth.signOut();
-  };
+    setUser(null);
+    setSession(null);
+    router.replace("/(modals)/login");
+  } catch (error) {
+    console.error("Error signing out:", error);
+  }
+};
+
 
   useEffect(() => {
     if (session) {
-      router.push("/(tabs)");
+      router.replace("/(tabs)");
     } else {
-      router.push("/(modals)/login");
+      router.replace("/(modals)/login");
     }
+          SplashScreen.hideAsync();
+
   }, [session, user]);
 
   const value = {
